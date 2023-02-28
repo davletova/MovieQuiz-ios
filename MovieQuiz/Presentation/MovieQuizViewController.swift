@@ -13,6 +13,8 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet private var counterLabel: UILabel!
+    @IBOutlet private var yesButton: UIButton!
+    @IBOutlet private var noButton: UIButton!
 
     private var currentQuestionIndex: Int = 0
     private var correctAnswers: Int = 0
@@ -52,18 +54,25 @@ final class MovieQuizViewController: UIViewController {
     }
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
+        yesButton.isEnabled = false
+        
         let currentQuestion = questions[currentQuestionIndex]
         let givenAnswer = true
         return showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
 
     @IBAction private func noButtonClicked(_ sender: UIButton) {
+        noButton.isEnabled = false
+        
         let currentQuestion = questions[currentQuestionIndex]
         let givenAnswer = false
         return showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
     private func show(quiz step: QuizStepViewModel) {
+        yesButton.isEnabled = true
+        noButton.isEnabled = true
+        
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.QuestionNumber
