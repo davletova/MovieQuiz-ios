@@ -16,18 +16,18 @@ final class MovieQuizViewController: UIViewController {
 
     private var currentQuestionIndex: Int = 0
     private var correctAnswers: Int = 0
-    
-    @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        let currentQuestion = questions[currentQuestionIndex]
-        let givenAnswer = true
-        return showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-    }
-
-    @IBAction private func noButtonClicked(_ sender: UIButton) {
-        let currentQuestion = questions[currentQuestionIndex]
-        let givenAnswer = false
-        return showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-    }
+    private let questions: [QuizQuestion] = [
+        QuizQuestion("The Godfather", "Рейтинг этого фильма больше чем 6?", true),
+        QuizQuestion("The Dark Knight", "Рейтинг этого фильма больше чем 6?", true),
+        QuizQuestion("Kill Bill", "Рейтинг этого фильма больше чем 6?", true),
+        QuizQuestion("The Avengers", "Рейтинг этого фильма больше чем 6?", true),
+        QuizQuestion("Deadpool", "Рейтинг этого фильма больше чем 6?", true),
+        QuizQuestion("The Green Knight", "Рейтинг этого фильма больше чем 6?", true),
+        QuizQuestion("Old", "Рейтинг этого фильма больше чем 6?", false),
+        QuizQuestion("The Ice Age Adventures of Buck Wild", "Рейтинг этого фильма больше чем 6?", false),
+        QuizQuestion("Tesla", "Рейтинг этого фильма больше чем 6?", false),
+        QuizQuestion("Vivarium", "Рейтинг этого фильма больше чем 6?", false),
+    ]
     
     struct QuizQuestion {
         let image: String
@@ -51,23 +51,22 @@ final class MovieQuizViewController: UIViewController {
         let buttonText: String
     }
     
-    private let questions: [QuizQuestion] = [
-        QuizQuestion("The Godfather", "Рейтинг этого фильма больше чем 6?", true),
-        QuizQuestion("The Dark Knight", "Рейтинг этого фильма больше чем 6?", true),
-        QuizQuestion("Kill Bill", "Рейтинг этого фильма больше чем 6?", true),
-        QuizQuestion("The Avengers", "Рейтинг этого фильма больше чем 6?", true),
-        QuizQuestion("Deadpool", "Рейтинг этого фильма больше чем 6?", true),
-        QuizQuestion("The Green Knight", "Рейтинг этого фильма больше чем 6?", true),
-        QuizQuestion("Old", "Рейтинг этого фильма больше чем 6?", false),
-        QuizQuestion("The Ice Age Adventures of Buck Wild", "Рейтинг этого фильма больше чем 6?", false),
-        QuizQuestion("Tesla", "Рейтинг этого фильма больше чем 6?", false),
-        QuizQuestion("Vivarium", "Рейтинг этого фильма больше чем 6?", false),
-    ]
+    @IBAction private func yesButtonClicked(_ sender: UIButton) {
+        let currentQuestion = questions[currentQuestionIndex]
+        let givenAnswer = true
+        return showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+    }
+
+    @IBAction private func noButtonClicked(_ sender: UIButton) {
+        let currentQuestion = questions[currentQuestionIndex]
+        let givenAnswer = false
+        return showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+    }
     
     private func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image
         textLabel.text = step.question
-        counterLabel.text = "\(step.QuestionNumber)/10"
+        counterLabel.text = step.QuestionNumber
     }
 
     private func show(qiuz result: QuizResultsViewModel) {
@@ -89,7 +88,6 @@ final class MovieQuizViewController: UIViewController {
     private func showAnswerResult(isCorrect: Bool) {
         imageView.layer.masksToBounds = true // даём разрешение на рисование рамки
         imageView.layer.borderWidth = 8 // толщина рамки
-        // imageView.layer.cornerRadius = 20 // радиус скругления углов рамки
         
         if isCorrect {
             self.correctAnswers += 1
@@ -101,8 +99,7 @@ final class MovieQuizViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             // убираем зеленую или красную рамку после предыдущего ответа
             self.imageView.layer.borderWidth = 0
-            
-               self.showNextQuestionOrResults()
+            self.showNextQuestionOrResults()
            }
     }
 
@@ -110,7 +107,6 @@ final class MovieQuizViewController: UIViewController {
         if currentQuestionIndex == questions.count - 1 {
             let resultText = "Ваш результат:\(self.correctAnswers)/\(self.questions.count)"
             let result = QuizResultsViewModel(title: "Этот раунд окончен", text: resultText, buttonText: "Сыграть еще раз")
-                
             self.show(qiuz: result)
         } else {
             currentQuestionIndex += 1
@@ -128,8 +124,6 @@ final class MovieQuizViewController: UIViewController {
             QuestionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
       }
 }
-
-
     
 /*
  Mock-данные
