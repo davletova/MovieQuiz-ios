@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
+final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, AlertPresentDelegate {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +21,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol?
+    private var alertPresenter: AlertPresenterProtocol?
     private var currentQuestion: QuizQuestion?
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
@@ -50,6 +51,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
     
+    //MARK: AlertPresentDelegate
+    func present(alert: UIAlertController) {
+        present(alert, animated: true, completion: nil)
+    }
+    
     private func show(quiz step: QuizStepViewModel) {
         yesButton.isEnabled = true
         noButton.isEnabled = true
@@ -58,20 +64,18 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         textLabel.text = step.question
         counterLabel.text = step.QuestionNumber
     }
-
-    private func show(qiuz result: QuizResultsViewModel) {
-        let alert = UIAlertController(title: result.title, message: result.text, preferredStyle: .alert)
-        let action = UIAlertAction(title: "Сыграть еще раз", style: .default) { [weak self] _ in
-            guard let self = self else { return }
-            
+    
+    private func showAlert() {
+        let alertModel = AlertModel(correctAnswers: correctAnswers, questionsAmount: questionsAmount)
+        alertModel.complition = {
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
             
             self.questionFactory?.requestNextQuestion()
         }
-        alert.addAction(action)
+        self.alertPresenter = AlertPresenter(delegate: self)
         
-        self.present(alert, animated: true, completion: nil)
+        self.alertPresenter?.present(model: alertModel)
     }
     
     private func showAnswerResult(isCorrect: Bool) {
@@ -96,9 +100,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionsAmount - 1 {
-            let resultText = "Ваш результат:\(self.correctAnswers)/\(self.questionsAmount)"
-            let result = QuizResultsViewModel(title: "Этот раунд окончен", text: resultText, buttonText: "Сыграть еще раз")
-            self.show(qiuz: result)
+            self.showAlert()
         } else {
             currentQuestionIndex += 1
             
