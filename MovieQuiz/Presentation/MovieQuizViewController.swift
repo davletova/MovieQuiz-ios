@@ -6,7 +6,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         super.viewDidLoad()
         
         questionFactory = QuestionFactory(delegate: self)
-        
+    
         questionFactory?.requestNextQuestion()
     }
     
@@ -23,6 +23,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     private var questionFactory: QuestionFactoryProtocol?
     private var alertPresenter: AlertPresenterProtocol?
     private var currentQuestion: QuizQuestion?
+    private var statisticService: StatisticService? = StatisticServiceImplementation()
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         yesButton.isEnabled = false
@@ -66,7 +67,42 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     private func showAlert() {
-        let alertModel = AlertModel(correctAnswers: correctAnswers, questionsAmount: questionsAmount)
+        //self.title = "Этот раунд окончен"
+        //self.message = "Ваш результат:\(correctAnswers)/\(questionsAmount)"
+        //self.buttonText = "Сыграть еще раз"
+        
+        statisticService?.store(correct: correctAnswers, total: questionsAmount)
+        
+        // пытаемся достать количество сыгранных квизов
+        // если не получается, то считаем, что количество сыгранных квизов = 1
+        var gamesCount = 1
+        if let gamesCountFromStore = statisticService?.gamesCount {
+            gamesCount = gamesCountFromStore
+        }
+        
+        // пытаемся достать точность ответов за все игры
+        // если не получается, то вычисляем точность на основе последней игры
+        var totalAccuracy: Double = Double(correctAnswers / questionsAmount * 100)
+        if let totalAccuracyFromStore = statisticService?.totalAccuracy {
+            totalAccuracy =  totalAccuracyFromStore
+        }
+       
+        // пытаемся достать лучшую игру
+        // если не получается, то считаем, что лучшая игра - текущая
+        var bestGame = GameRecord(correct: correctAnswers, total: questionsAmount, date: Date())
+        if let bestGameFromStore = statisticService?.bestGame {
+            bestGame = bestGameFromStore
+        }
+        
+        let title = "Этот раунд окончен"
+        let buttontext = "Сыграть еще раз"
+        let message = """
+Ваш результат: \(correctAnswers)/\(questionsAmount)
+Количество сыгранных квизов: \(gamesCount.description)
+Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))
+Средняя точность: \(totalAccuracy)%
+"""
+        let alertModel = AlertModel(title: title, message: message, buttonText: buttontext)
         alertModel.complition = {
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
