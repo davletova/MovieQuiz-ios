@@ -67,10 +67,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     private func showAlert() {
-        //self.title = "Этот раунд окончен"
-        //self.message = "Ваш результат:\(correctAnswers)/\(questionsAmount)"
-        //self.buttonText = "Сыграть еще раз"
-        
         statisticService?.store(correct: correctAnswers, total: questionsAmount)
         
         // пытаемся достать количество сыгранных квизов
@@ -100,7 +96,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
 Ваш результат: \(correctAnswers)/\(questionsAmount)
 Количество сыгранных квизов: \(gamesCount.description)
 Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))
-Средняя точность: \(totalAccuracy)%
+Средняя точность: \(String(format: "%.2f", totalAccuracy))%
 """
         let alertModel = AlertModel(title: title, message: message, buttonText: buttontext)
         alertModel.complition = {

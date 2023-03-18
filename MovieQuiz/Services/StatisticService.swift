@@ -90,13 +90,14 @@ final class StatisticServiceImplementation: StatisticService {
         // вычисляем количество верных ответов за все сыгранные игры
         // необходимо для вычисления нового занчения totalAccuracy
         // прибавляем верные ответы из последней игры к общему количеству верных ответов
-        let totalCorrectAnswer: Int = count + Int(totalAccuracy) / 100 * gamesCount * questionsCountInGame
-
+        let totalCorrectAnswer: Double = Double(count) + totalAccuracy / 100 * Double(gamesCount) * Double(questionsCountInGame)
+        
         // прибавляем к общему количеству игр пройденную игру
         gamesCount += 1
 
         // вычисляем новую точность ответов с учетом последней игры
-        totalAccuracy = Double(totalCorrectAnswer / (gamesCount * questionsCountInGame) * 100)
+        totalAccuracy = totalCorrectAnswer * 100 / Double(gamesCount * questionsCountInGame)
+
         
         // сравниаем лучший результат игры с результатом последней игры
         // если результат последней игры лучше, то сохраняем его

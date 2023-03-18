@@ -7,15 +7,7 @@
 
 import Foundation
 
-class GameRecord: Codable, Comparable {
-    static func == (lhs: GameRecord, rhs: GameRecord) -> Bool {
-        lhs.correct = rhs.correct
-    }
-    
-    static func < (lhs: GameRecord, rhs: GameRecord) -> Bool {
-        lhs.correct < rhs.correct
-    }
-    
+class GameRecord: Codable {
     // количество правильных ответов
     let correct: Int
     // количество вопросов в квизе
