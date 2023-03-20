@@ -12,7 +12,7 @@ class AlertModel {
     var message: String
     var buttonText: String
     
-    var complition: (() -> Void)? = nil
+    var completion: (() -> Void)? = nil
     
     init(title: String, message: String, buttonText: String) {
         self.title = title

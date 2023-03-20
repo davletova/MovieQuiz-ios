@@ -28,40 +28,20 @@ final class StatisticServiceImplementation: StatisticService {
     // средняя точность правильных ответов
     var totalAccuracy: Double {
         get {
-            guard let data = userDefaults.data(forKey: Keys.total.rawValue),
-                  let record = try? JSONDecoder().decode(Double.self, from: data) else {
-                return 0
-            }
-            
-            return record
+            return userDefaults.double(forKey: Keys.total.rawValue)
         }
         set {
-            guard let data = try? JSONEncoder().encode(newValue) else {
-                print("Невозможно сохранить результат")
-                return
-            }
-            
-            userDefaults.set(data, forKey: Keys.total.rawValue)
+            userDefaults.set(newValue, forKey: Keys.total.rawValue)
         }
     }
     
     // количество всех сыгранных квизов
     var gamesCount: Int {
         get {
-            guard let data = userDefaults.data(forKey: Keys.gamesCount.rawValue),
-                  let record = try? JSONDecoder().decode(Int.self, from: data) else {
-                return 0
-            }
-            
-            return record
+            return userDefaults.integer(forKey: Keys.gamesCount.rawValue)
         }
         set {
-            guard let data = try? JSONEncoder().encode(newValue) else {
-                print("Невозможно сохранить результат")
-                return
-            }
-            
-            userDefaults.set(data, forKey: Keys.gamesCount.rawValue)
+            userDefaults.set(newValue, forKey: Keys.gamesCount.rawValue)
         }
     }
     
@@ -102,8 +82,8 @@ final class StatisticServiceImplementation: StatisticService {
         // сравниаем лучший результат игры с результатом последней игры
         // если результат последней игры лучше, то сохраняем его
         if count > bestGame.correct {
-            let newbBestGame = GameRecord(correct: count, total: amount, date: Date())
-            self.bestGame = newbBestGame
+            let newBestGame = GameRecord(correct: count, total: amount, date: Date())
+            bestGame = newBestGame
         }
     }
 }

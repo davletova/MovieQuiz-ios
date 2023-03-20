@@ -1,24 +1,14 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, AlertPresentDelegate {
-    // MARK: - Lifecycle
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        questionFactory = QuestionFactory(delegate: self)
-    
-        questionFactory?.requestNextQuestion()
-    }
-    
+final class MovieQuizViewController: UIViewController {
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet private var counterLabel: UILabel!
     @IBOutlet private var yesButton: UIButton!
     @IBOutlet private var noButton: UIButton!
-
+    
     private var currentQuestionIndex: Int = 0
     private var correctAnswers: Int = 0
-    
     private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol?
     private var alertPresenter: AlertPresenterProtocol?
@@ -41,20 +31,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         return showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
-    // MARK: QuestionFactoryDelegate
-    func didRecieveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else { return }
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        currentQuestion = question
-        let viewModel = convert(model: question)
-        DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: viewModel)
-        }
-    }
+        questionFactory = QuestionFactory(delegate: self)
     
-    //MARK: AlertPresentDelegate
-    func present(alert: UIAlertController) {
-        present(alert, animated: true, completion: nil)
+        questionFactory?.requestNextQuestion()
     }
     
     private func show(quiz step: QuizStepViewModel) {
@@ -99,15 +81,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
 Средняя точность: \(String(format: "%.2f", totalAccuracy))%
 """
         let alertModel = AlertModel(title: title, message: message, buttonText: buttontext)
-        alertModel.complition = {
+        alertModel.completion = {
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
             
             self.questionFactory?.requestNextQuestion()
         }
-        self.alertPresenter = AlertPresenter(delegate: self)
+        alertPresenter = AlertPresenter(delegate: self)
         
-        self.alertPresenter?.present(model: alertModel)
+        alertPresenter?.present(model: alertModel)
     }
     
     private func showAnswerResult(isCorrect: Bool) {
@@ -132,11 +114,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
 
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionsAmount - 1 {
-            self.showAlert()
+            showAlert()
         } else {
             currentQuestionIndex += 1
             
-            self.questionFactory?.requestNextQuestion()
+            questionFactory?.requestNextQuestion()
         }
     }
     
@@ -144,10 +126,30 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         return QuizStepViewModel(
             image: UIImage(named: model.image) ?? UIImage(),
             question: model.text,
-            QuestionNumber: "\(currentQuestionIndex + 1)/\(self.questionsAmount)")
+            QuestionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
       }
 }
+
+// MARK: QuestionFactoryDelegate
+extension MovieQuizViewController: QuestionFactoryDelegate {
+    func didRecieveNextQuestion(question: QuizQuestion?) {
+        guard let question = question else { return }
+        
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        DispatchQueue.main.async { [weak self] in
+            self?.show(quiz: viewModel)
+        }
+    }
+}
     
+//MARK: AlertPresentDelegate
+extension MovieQuizViewController: AlertPresentDelegate {
+    func present(alert: UIAlertController) {
+        present(alert, animated: true, completion: nil)
+    }
+}
+
 /*
  Mock-данные
  

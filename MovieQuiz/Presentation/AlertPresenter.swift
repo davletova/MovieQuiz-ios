@@ -17,7 +17,7 @@ class AlertPresenter: AlertPresenterProtocol {
     func present(model: AlertModel) {
         let alert = UIAlertController(title: model.title, message: model.message, preferredStyle: .alert)
         let action = UIAlertAction(title: model.buttonText, style: .default) {_ in
-            guard let complition = model.complition else { return }
+            guard let complition = model.completion else { return }
             complition()
         }
         
