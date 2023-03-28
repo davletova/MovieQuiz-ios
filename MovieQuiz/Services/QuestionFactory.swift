@@ -24,26 +24,51 @@ class QuestionFactory: QuestionFactoryProtocol {
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
         
-            let index = (0..<self.movies.count).randomElement() ?? 0
+            let index = Int.random(in: 0..<self.movies.count)
             guard let movie = self.movies[safe: index] else { return }
             
             var imageData = Data()
+            
+            // отображаем лоадер на время загрузки постера фильма
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.delegate?.showLoadingIndicator()
+            }
             
             do {
                 imageData = try Data(contentsOf: movie.resizedImageURL)
             } catch {
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
+                    // прекращаем отображение лоадера
+                    self.delegate?.hideLoadingIndicator()
+                    // передаем ошибку, возникшую при загрузке постера
                     self.delegate?.didFailToLoadImage(with: error)
                 }
                 
                 return
             }
             
+            // прекращаем отображение лоадера
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.delegate?.hideLoadingIndicator()
+            }
+            
             let rating = Float(movie.rating) ?? 0
-            let questionRating = (6...9).randomElement() ?? 0
-            let text = "Рейтинг этого фильма больше, чем \(questionRating)?"
-            let correctAnswer = rating > Float(questionRating)
+            
+            // рандомно выбиарем рейтинг для отображения в вопросе
+            let questionRating = Int.random(in: (7...9))
+            
+            // рандомно выбиараем условие "больше" или "меньше" для вопроса
+            // считаем, что true = "больше", false = "меньше"
+            let questionSign = Bool.random()
+            
+            // составляем вопрос из ранее определенных условия и рейтинга
+            let text = "Рейтинг этого фильма \(questionSign ? "больше" : "меньше"), чем \(questionRating)?"
+            
+            // определяем ответ на наш составленный вопрос
+            let correctAnswer = questionSign ? rating > Float(questionRating) : rating < Float(questionRating)
             
             let question = QuizQuestion(imageData, text, correctAnswer)
             

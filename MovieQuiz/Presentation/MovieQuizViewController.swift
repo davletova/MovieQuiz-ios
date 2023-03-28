@@ -159,6 +159,11 @@ final class MovieQuizViewController: UIViewController {
     
     func showLoadingIndicator() {
         activityIndicator.isHidden = false // говорим, что индикатор загрузки не скрыт
+        // задаем цвет фон для лоадера для лучшего его отображения
+        activityIndicator.backgroundColor = .lightGray.withAlphaComponent(0.5)
+        // указываем цвет, так как настройка backgroundColor меняет цвет самого лоадера
+        activityIndicator.color = .white
+        //запускаем анимацию
         activityIndicator.startAnimating() // включаем анимацию
     }
     
@@ -174,7 +179,7 @@ extension MovieQuizViewController: QuestionFactoryDelegate {
     }
     
     func didLoadDataFromServer() {
-        activityIndicator.isHidden = true
+        hideLoadingIndicator()
         questionFactory?.requestNextQuestion()
     }
     

@@ -12,4 +12,7 @@ protocol QuestionFactoryDelegate: AnyObject {
     func didLoadDataFromServer() // сообщение об успешной ошибке
     func didFailToLoadData(with error: Error) //сообщение об ошибке загрузки данных о фильмах
     func didFailToLoadImage(with error: Error) // сообщение об ошибке загрузки постера
+    
+    func showLoadingIndicator() // отображаем лоадер
+    func hideLoadingIndicator() // скрываем лоадер
 }
