@@ -8,29 +8,89 @@
 import Foundation
 
 class QuestionFactory: QuestionFactoryProtocol {
-    private let questions: [QuizQuestion] = [
-        QuizQuestion("The Godfather", "Рейтинг этого фильма больше чем 6?", true),
-        QuizQuestion("The Dark Knight", "Рейтинг этого фильма больше чем 6?", true),
-        QuizQuestion("Kill Bill", "Рейтинг этого фильма больше чем 6?", true),
-        QuizQuestion("The Avengers", "Рейтинг этого фильма больше чем 6?", true),
-        QuizQuestion("Deadpool", "Рейтинг этого фильма больше чем 6?", true),
-        QuizQuestion("The Green Knight", "Рейтинг этого фильма больше чем 6?", true),
-        QuizQuestion("Old", "Рейтинг этого фильма больше чем 6?", false),
-        QuizQuestion("The Ice Age Adventures of Buck Wild", "Рейтинг этого фильма больше чем 6?", false),
-        QuizQuestion("Tesla", "Рейтинг этого фильма больше чем 6?", false),
-        QuizQuestion("Vivarium", "Рейтинг этого фильма больше чем 6?", false),
-    ]
+
+    private var movies: [MostPopularMovie] = []
+    
+    private let moviesLoader: MoviesLoading
     
     weak var delegate: QuestionFactoryDelegate?
     
-    init(delegate: QuestionFactoryDelegate) {
+    init(moviesLoader: MoviesLoading, delegate: QuestionFactoryDelegate) {
+        self.moviesLoader = moviesLoader
         self.delegate = delegate
     }
     
     func requestNextQuestion() {
-        guard let index = (0..<questions.count).randomElement() else { return }
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
         
-        let question = questions[safe: index]
-        delegate?.didRecieveNextQuestion(question: question)
-    } 
+            let index = Int.random(in: 0..<self.movies.count)
+            guard let movie = self.movies[safe: index] else { return }
+            
+            var imageData = Data()
+            
+            // отображаем лоадер на время загрузки постера фильма
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.delegate?.showLoadingIndicator()
+            }
+            
+            do {
+                imageData = try Data(contentsOf: movie.resizedImageURL)
+            } catch {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    // прекращаем отображение лоадера
+                    self.delegate?.hideLoadingIndicator()
+                    // передаем ошибку, возникшую при загрузке постера
+                    self.delegate?.didFailToLoadImage(with: error)
+                }
+                
+                return
+            }
+            
+            // прекращаем отображение лоадера
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.delegate?.hideLoadingIndicator()
+            }
+            
+            let rating = Float(movie.rating) ?? 0
+            
+            // рандомно выбиарем рейтинг для отображения в вопросе
+            let questionRating = Int.random(in: (7...9))
+            
+            // рандомно выбиараем условие "больше" или "меньше" для вопроса
+            // считаем, что true = "больше", false = "меньше"
+            let questionSign = Bool.random()
+            
+            // составляем вопрос из ранее определенных условия и рейтинга
+            let text = "Рейтинг этого фильма \(questionSign ? "больше" : "меньше"), чем \(questionRating)?"
+            
+            // определяем ответ на наш составленный вопрос
+            let correctAnswer = questionSign ? rating > Float(questionRating) : rating < Float(questionRating)
+            
+            let question = QuizQuestion(imageData, text, correctAnswer)
+            
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.delegate?.didRecieveNextQuestion(question: question)
+            }
+        }
+    }
+    
+    func loadData() {
+        moviesLoader.loadMovies { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                switch result {
+                case .success(let mostPopularMovies):
+                    self.movies = mostPopularMovies.items
+                    self.delegate?.didLoadDataFromServer()
+                case .failure(let error):
+                    self.delegate?.didFailToLoadData(with: error)
+                }
+            }
+        }
+    }
 }

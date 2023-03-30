@@ -45,7 +45,7 @@
                                             </label>
                                         </subviews>
                                     </stackView>
-                                    <imageView clipsSubviews="YES" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="yM9-zO-wl9" userLabel="Preview View">
+                                    <imageView clipsSubviews="YES" clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchScreen" translatesAutoresizingMaskIntoConstraints="NO" id="yM9-zO-wl9" userLabel="Preview View">
                                         <rect key="frame" x="0.0" y="33.666666666666686" width="350" height="525"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
@@ -57,8 +57,8 @@
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Рейтинг этого фильма меньше, чем 5?" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fqR-3G-YF8" userLabel="Questoin Label">
-                                        <rect key="frame" x="0.0" y="568.66666666666663" width="340.66666666666669" height="94.333333333333371"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fqR-3G-YF8" userLabel="Questoin Label">
+                                        <rect key="frame" x="0.0" y="568.66666666666663" width="350" height="94.333333333333371"/>
                                         <color key="tintColor" name="YP White"/>
                                         <fontDescription key="fontDescription" name="YSDisplay-Bold" family="YS Display" pointSize="23"/>
                                         <color key="textColor" name="YP White"/>
@@ -111,21 +111,37 @@
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="yM9-zO-wl9" firstAttribute="centerX" secondItem="2Uo-mu-fCR" secondAttribute="centerX" id="GQs-EP-Enq"/>
+                                    <constraint firstItem="fqR-3G-YF8" firstAttribute="centerX" secondItem="2Uo-mu-fCR" secondAttribute="centerX" id="Moe-yy-pHl"/>
                                     <constraint firstAttribute="trailing" secondItem="Jqb-tr-Q8V" secondAttribute="trailing" id="pB4-B9-yHw"/>
                                     <constraint firstAttribute="trailing" secondItem="KIA-Xc-8iy" secondAttribute="trailing" id="sdu-F8-nw5"/>
                                 </constraints>
                             </stackView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="LUs-ab-xX1">
+                                <rect key="frame" x="165" y="392" width="60" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="8Rg-yc-pty"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="60" id="DXm-Zf-eEI"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="15"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </activityIndicatorView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" name="YP Background"/>
                         <constraints>
                             <constraint firstItem="2Uo-mu-fCR" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="4Lp-1y-d66"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="2Uo-mu-fCR" secondAttribute="trailing" constant="20" id="5Ht-dh-0Tr"/>
+                            <constraint firstItem="LUs-ab-xX1" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="JaR-3J-fMX"/>
                             <constraint firstItem="2Uo-mu-fCR" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="10" id="RFQ-2P-SD6"/>
                             <constraint firstItem="2Uo-mu-fCR" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" constant="-20" id="RU2-VK-EBw"/>
+                            <constraint firstItem="LUs-ab-xX1" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="aHC-7r-BW5"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="LUs-ab-xX1" id="1Rk-Mg-8Zl"/>
                         <outlet property="counterLabel" destination="aQv-j0-kyf" id="UJ8-de-kYg"/>
                         <outlet property="imageView" destination="yM9-zO-wl9" id="Zbk-8P-H1A"/>
                         <outlet property="noButton" destination="TS7-Cb-pMR" id="ylJ-Sr-WeU"/>
@@ -135,10 +151,11 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-55.072463768115945" y="55.580357142857139"/>
+            <point key="canvasLocation" x="-55.38461538461538" y="55.45023696682464"/>
         </scene>
     </scenes>
     <resources>
+        <image name="LaunchScreen" width="1125" height="2436"/>
         <namedColor name="YP Background">
             <color red="0.10199999809265137" green="0.10599999874830246" blue="0.13300000131130219" alpha="0.60000002384185791" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
