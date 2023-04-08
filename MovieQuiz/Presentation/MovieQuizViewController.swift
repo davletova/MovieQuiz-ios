@@ -8,9 +8,9 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private var noButton: UIButton!
     @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
-    private var currentQuestionIndex: Int = 0
+    private let presenter = MovieQuizPresenter()
+     
     private var correctAnswers: Int = 0
-    private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol?
     private var alertPresenter: AlertPresenterProtocol?
     private var currentQuestion: QuizQuestion?
@@ -54,7 +54,7 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func showAlert() {
-        statisticService?.store(correct: correctAnswers, total: questionsAmount)
+        statisticService?.store(correct: correctAnswers, total: presenter.questionsAmount)
         
         // пытаемся достать количество сыгранных квизов
         // если не получается, то считаем, что количество сыгранных квизов = 1
@@ -65,14 +65,14 @@ final class MovieQuizViewController: UIViewController {
         
         // пытаемся достать точность ответов за все игры
         // если не получается, то вычисляем точность на основе последней игры
-        var totalAccuracy: Double = Double(correctAnswers / questionsAmount * 100)
+        var totalAccuracy: Double = Double(correctAnswers / presenter.questionsAmount * 100)
         if let totalAccuracyFromStore = statisticService?.totalAccuracy {
             totalAccuracy =  totalAccuracyFromStore
         }
        
         // пытаемся достать лучшую игру
         // если не получается, то считаем, что лучшая игра - текущая
-        var bestGame = GameRecord(correct: correctAnswers, total: questionsAmount, date: Date())
+        var bestGame = GameRecord(correct: correctAnswers, total: presenter.questionsAmount, date: Date())
         if let bestGameFromStore = statisticService?.bestGame {
             bestGame = bestGameFromStore
         }
@@ -80,14 +80,14 @@ final class MovieQuizViewController: UIViewController {
         let title = "Этот раунд окончен"
         let buttontext = "Сыграть еще раз"
         let message = """
-Ваш результат: \(correctAnswers)/\(questionsAmount)
+Ваш результат: \(correctAnswers)/\(presenter.questionsAmount)
 Количество сыгранных квизов: \(gamesCount.description)
 Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))
 Средняя точность: \(String(format: "%.2f", totalAccuracy))%
 """
         let alertModel = AlertModel(title: title, message: message, buttonText: buttontext, identifier: "Game over")
         alertModel.completion = {
-            self.currentQuestionIndex = 0
+            self.presenter.resetQuestionIndex()
             self.correctAnswers = 0
             
             self.questionFactory?.requestNextQuestion()
@@ -118,19 +118,12 @@ final class MovieQuizViewController: UIViewController {
     }
 
     private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questionsAmount - 1 {
+        if presenter.isLastQuestion() {
             showAlert()
         } else {
-            currentQuestionIndex += 1
+            presenter.switchToNextQuestion()
             questionFactory?.requestNextQuestion()
         }
-    }
-    
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        return QuizStepViewModel(
-            image: UIImage(data: model.image) ?? UIImage(),
-            question: model.text,
-            QuestionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
     }
     
     private func showNetworkingError(message: String) {
@@ -197,7 +190,7 @@ extension MovieQuizViewController: QuestionFactoryDelegate {
         guard let question = question else { return }
         
         currentQuestion = question
-        let viewModel = convert(model: question)
+        let viewModel = presenter.convert(model: question)
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
         }
