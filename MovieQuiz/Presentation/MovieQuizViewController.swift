@@ -85,7 +85,7 @@ final class MovieQuizViewController: UIViewController {
 Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))
 Средняя точность: \(String(format: "%.2f", totalAccuracy))%
 """
-        let alertModel = AlertModel(title: title, message: message, buttonText: buttontext)
+        let alertModel = AlertModel(title: title, message: message, buttonText: buttontext, identifier: "Game over")
         alertModel.completion = {
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
@@ -136,7 +136,10 @@ final class MovieQuizViewController: UIViewController {
     private func showNetworkingError(message: String) {
         hideLoadingIndicator()
         
-        let alertModel = AlertModel(title: "Ошибка", message: "Не удалось загрузить данные", buttonText: "Попробовать еще раз")
+        let alertModel = AlertModel(title: "Ошибка",
+                                    message: "Не удалось загрузить данные",
+                                    buttonText: "Попробовать еще раз",
+                                    identifier: "failed to load movies")
         alertModel.completion = {
             self.showLoadingIndicator()
             
@@ -148,7 +151,10 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func showNetworkingErrorWhenImageLoad(message: String) {
-        let alertModel = AlertModel(title: "Ошибка", message: "Не удалось загрузить фильм", buttonText: "Попробовать еще раз")
+        let alertModel = AlertModel(title: "Ошибка",
+                                    message: "Не удалось загрузить фильм",
+                                    buttonText: "Попробовать еще раз",
+                                    identifier: "failed to load image")
         alertModel.completion = {
             self.questionFactory?.requestNextQuestion()
         }

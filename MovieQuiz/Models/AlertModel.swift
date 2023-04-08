@@ -11,13 +11,15 @@ class AlertModel {
     var title: String
     var message: String
     var buttonText: String
+    var identifier: String
     
     var completion: (() -> Void)? = nil
     
-    init(title: String, message: String, buttonText: String) {
+    init(title: String, message: String, buttonText: String, identifier: String) {
         self.title = title
         self.message = message
         self.buttonText = buttonText
+        self.identifier = identifier
     }
 }
 
