@@ -8,5 +8,6 @@
 import UIKit
 
 protocol AlertPresentDelegate: AnyObject {
+    // показываем алерт
     func present(alert: UIAlertController)
 }

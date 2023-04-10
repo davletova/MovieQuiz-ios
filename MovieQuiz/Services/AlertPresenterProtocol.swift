@@ -8,5 +8,6 @@
 import Foundation
 
 protocol AlertPresenterProtocol: AnyObject {
+    // отображаем алерт на основе переданной модели
     func present(model: AlertModel)
 }

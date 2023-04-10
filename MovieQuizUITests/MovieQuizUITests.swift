@@ -97,6 +97,8 @@ final class MovieQuizUITests: XCTestCase {
         
         sleep(3)
         
+        XCTAssert(!alert.exists)
+        
         let firstPoster = app.images["Poster"]
         
         XCTAssert(firstPoster.exists)

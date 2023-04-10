@@ -7,6 +7,8 @@
 
 import Foundation
 
+let mostPopularMoviewURL = "https://imdb-api.com/en/API/MostPopularTVs/k_5b45e376"
+
 protocol MoviesLoading {
     func loadMovies(handler: @escaping (Result<MostPopularMovies, Error>) -> Void)
 }
@@ -19,7 +21,7 @@ struct MoviesLoader: MoviesLoading {
     }
     
     private var mostPopularMoviesURL: URL {
-        guard let url = URL(string: "https://imdb-api.com/en/API/MostPopularTVs/k_5b45e376") else {
+        guard let url = URL(string: mostPopularMoviewURL) else {
             preconditionFailure("Unable to construct mostPopularMoviesURL")
         }
         return url
