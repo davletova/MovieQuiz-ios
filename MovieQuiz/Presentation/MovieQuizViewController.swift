@@ -1,6 +1,9 @@
 import UIKit
 
 final class MovieQuizViewController: UIViewController {
+    private var presenter: MovieQuizPresenter!
+    private var alertPresenter: AlertPresenterProtocol?
+    
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet private var counterLabel: UILabel!
@@ -8,16 +11,13 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private var noButton: UIButton!
     @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
-    private var presenter: MovieQuizPresenter!
-    private var alertPresenter: AlertPresenterProtocol?
-    
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        disabledButtons()
+        isEnabledButtons(false)
         presenter.yesButtonClicked()
     }
 
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        disabledButtons()
+        isEnabledButtons(false)
         presenter.noButtonClicked()
     }
     
@@ -25,33 +25,21 @@ final class MovieQuizViewController: UIViewController {
         super.viewDidLoad()
         
         presenter = MovieQuizPresenter(viewController: self, statisticService: StatisticServiceImplementation())
-    
+        alertPresenter = AlertPresenter(delegate: self)
+        
         showLoadingIndicator()
     }
     
-    private func disabledButtons() {
-        noButton.isEnabled = false
-        yesButton.isEnabled = false
-    }
-    private func enabledButtons() {
-        noButton.isEnabled = true
-        yesButton.isEnabled = true
-    }
-
-    private func showNextQuestionOrResults() {
-        if presenter.isLastQuestion() {
-            showGameOverAlert()
-        } else {
-            presenter.switchToNextQuestion()
-            presenter.requestNextQuestion()
-        }
+    private func isEnabledButtons(_ isEnabled: Bool) {
+        noButton.isEnabled = isEnabled
+        yesButton.isEnabled = isEnabled
     }
 }
     
 //MARK: MovieQuizViewControllerProtocol
 extension MovieQuizViewController: MovieQuizViewControllerProtocol {
     func showQuestion(quiz step: QuizStepViewModel) {
-        enabledButtons()
+        isEnabledButtons(true)
         
         imageView.image = step.image
         textLabel.text = step.question
@@ -69,7 +57,6 @@ extension MovieQuizViewController: MovieQuizViewControllerProtocol {
             self.presenter.requestNextQuestion()
         }
         
-        alertPresenter = AlertPresenter(delegate: self)
         alertPresenter?.present(model: alertModel)
     }
     
@@ -85,7 +72,6 @@ extension MovieQuizViewController: MovieQuizViewControllerProtocol {
             self.presenter.loadData()
         }
         
-        alertPresenter = AlertPresenter(delegate: self)
         alertPresenter?.present(model: alertModel)
     }
     
@@ -98,7 +84,6 @@ extension MovieQuizViewController: MovieQuizViewControllerProtocol {
             self.presenter.requestNextQuestion()
         }
         
-        alertPresenter = AlertPresenter(delegate: self)
         alertPresenter?.present(model: alertModel)
     }
     
